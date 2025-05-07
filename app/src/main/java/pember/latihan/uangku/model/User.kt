@@ -10,7 +10,5 @@ data class User(
     val email: String,
     val passwordHash: String,
     @ColumnInfo(name = "initial_balance") val initialBalance: Double,
-    @ColumnInfo(name = "created_at") val createdAt: Date,
-    @ColumnInfo(name = "updated_at") val updatedAt: Date,
     @ColumnInfo(name = "is_deleted") val isDeleted: Boolean = false
 )

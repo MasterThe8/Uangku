@@ -17,7 +17,5 @@ data class Transaction(
     @ColumnInfo(name = "category_id") val categoryId: Int,
     val description: String,
     val date: Date,
-    val amount: Double,
-    @ColumnInfo(name = "created_at") val createdAt: Date,
-    @ColumnInfo(name = "updated_at") val updatedAt: Date
+    val amount: Double
 )

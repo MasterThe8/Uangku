@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Uangku</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_saldo">Saldo Awal</string>
+    <string name="btn_register">Register</string>
 </resources>
