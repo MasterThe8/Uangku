@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutIncome"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Spinner
+        android:id="@+id/spinnerCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:spinnerMode="dropdown" />
+
+    <EditText
+        android:id="@+id/etNominal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nominal"
+        android:inputType="numberDecimal"
+        android:layout_marginTop="12dp" />
+
+    <EditText
+        android:id="@+id/etDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Deskripsi"
+        android:layout_marginTop="12dp" />
+
+    <EditText
+        android:id="@+id/etDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tanggal (yyyy-MM-dd)"
+        android:layout_marginTop="12dp" />
+
+    <Button
+        android:id="@+id/btnAddIncome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tambah Pemasukan"
+        android:layout_marginTop="16dp" />
+</LinearLayout>

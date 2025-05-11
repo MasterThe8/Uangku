@@ -16,6 +16,13 @@
         android:inputType="textEmailAddress" />
 
     <EditText
+        android:id="@+id/etSaldo"
+        android:hint="Saldo Awal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal" />
+
+    <EditText
         android:id="@+id/etPassword"
         android:hint="Password"
         android:layout_width="match_parent"
@@ -23,11 +30,11 @@
         android:inputType="textPassword" />
 
     <EditText
-        android:id="@+id/etSaldo"
-        android:hint="Saldo Awal"
+        android:id="@+id/etConfirmPassword"
+        android:hint="Konfirmasi Password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal" />
+        android:inputType="textPassword" />
 
     <Button
         android:id="@+id/btnRegister"

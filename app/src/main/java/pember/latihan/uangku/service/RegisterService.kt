@@ -3,7 +3,7 @@ package pember.latihan.uangku.service
 import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import pember.latihan.uangku.model.FirebaseUser
+import pember.latihan.uangku.model.firebase.FirebaseUser
 import pember.latihan.uangku.utils.SessionManager
 
 object RegisterService {

@@ -26,6 +26,8 @@
         <!-- Login & Register -->
         <activity android:name=".ui.LoginActivity" />
         <activity android:name=".ui.RegisterActivity" />
+        <activity android:name=".ui.EditProfileActivity" />
+        <activity android:name=".ui.IncomeActivity" />
 
     </application>
 

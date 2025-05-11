@@ -2,14 +2,18 @@ package pember.latihan.uangku.ui
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.WindowManager
-import androidx.appcompat.app.AppCompatActivity
-import pember.latihan.uangku.utils.SessionManager
-import pember.latihan.uangku.MainActivity
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import pember.latihan.uangku.R
+import pember.latihan.uangku.ui.LoginActivity
+import pember.latihan.uangku.MainActivity
+import pember.latihan.uangku.utils.CategorySyncHelper
+import pember.latihan.uangku.utils.SessionManager
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {
@@ -22,19 +26,22 @@ class SplashActivity : AppCompatActivity() {
         )
         setContentView(R.layout.activity_splash)
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            val sessionManager = SessionManager(this)
-            val uid = sessionManager.getUserId()
+        lifecycleScope.launch {
+            CategorySyncHelper.syncCategories(this@SplashActivity)
 
-            val nextIntent = if (uid != null) {
-                Intent(this, MainActivity::class.java)
-            } else {
-                Intent(this, LoginActivity::class.java)
-            }
+            Handler(Looper.getMainLooper()).postDelayed({
+                val sessionManager = SessionManager(this@SplashActivity)
+                val uid = sessionManager.getUserId()
 
-            startActivity(nextIntent)
-            finish()
-        }, 2000)
+                val nextIntent = if (uid != null) {
+                    Intent(this@SplashActivity, MainActivity::class.java)
+                } else {
+                    Intent(this@SplashActivity, LoginActivity::class.java)
+                }
 
+                startActivity(nextIntent)
+                finish()
+            }, 2000)
+        }
     }
 }

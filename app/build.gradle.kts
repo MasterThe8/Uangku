@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 
     id("org.jetbrains.kotlin.kapt")
-
     id("com.google.gms.google-services")
 }
 
@@ -31,17 +30,22 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
         var kotlinCompilerExtensionVersion = "1.5.11"
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
+        viewBinding = true
     }
+
 }
 
 dependencies {
@@ -56,6 +60,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.firebase.perf.ktx)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.firebase.database.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -65,8 +70,10 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Room components
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
 
     implementation(platform("androidx.compose:compose-bom:2024.05.00"))
     implementation("androidx.compose.ui:ui")
@@ -80,5 +87,5 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
     implementation("com.google.firebase:firebase-analytics")
-
+    implementation("com.google.firebase:firebase-database-ktx")
 }
