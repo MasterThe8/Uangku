@@ -3,15 +3,18 @@ package pember.latihan.uangku.ui
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
+import android.app.AlertDialog
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pember.latihan.uangku.R
 import pember.latihan.uangku.data.AppDatabase
 import pember.latihan.uangku.service.EditProfileService
+import pember.latihan.uangku.utils.FirebaseSyncHelper
+import pember.latihan.uangku.utils.SessionManager
 
 class EditProfileActivity : AppCompatActivity() {
-
     private lateinit var etUsername: EditText
     private lateinit var etEmail: EditText
     private lateinit var etSaldo: EditText
@@ -32,8 +35,12 @@ class EditProfileActivity : AppCompatActivity() {
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
         btnSave = findViewById(R.id.btnSave)
 
-        // Load data dari Room
         lifecycleScope.launch {
+            val uid = SessionManager.getInstance(this@EditProfileActivity).getUserId()
+            if (uid != null) {
+                FirebaseSyncHelper.syncFromFirebase(this@EditProfileActivity, uid)
+            }
+
             val user = AppDatabase.getInstance(this@EditProfileActivity)
                 .userDao().getActiveUser()
 
@@ -79,8 +86,19 @@ class EditProfileActivity : AppCompatActivity() {
                     Toast.makeText(this@EditProfileActivity, "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()
                     finish()
                 } else {
-                    Toast.makeText(this@EditProfileActivity, "Gagal: ${result.exceptionOrNull()?.message}", Toast.LENGTH_LONG).show()
+                    val message = result.exceptionOrNull()?.message ?: "Gagal memperbarui"
+
+                    if (message.startsWith("Perubahan email atau password berhasil")) {
+                        Toast.makeText(this@EditProfileActivity, message, Toast.LENGTH_LONG).show()
+                        SessionManager.getInstance(this@EditProfileActivity).clearSession()
+                        val intent = Intent(this@EditProfileActivity, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(this@EditProfileActivity, "Gagal: $message", Toast.LENGTH_LONG).show()
+                    }
                 }
+
                 Log.d("EditProfile", "Hasil: $result")
             }
         }

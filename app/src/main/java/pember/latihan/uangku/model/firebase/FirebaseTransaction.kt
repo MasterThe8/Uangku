@@ -6,13 +6,12 @@ import java.util.Date
 data class FirebaseTransaction(
     var id: String = "",
     var userId: String = "",
-    var categoryName: String = "", // tambahkan
-    var type: String = "",         // income / expense
+    var categoryName: String = "",
+    var type: String = "", // income / expense
     var description: String = "",
     var date: Long = 0L,
     var amount: Double = 0.0
 )
-
 
 fun FirebaseTransaction.toRoomTransaction(localUserId: Int, localCategoryId: Int): Transaction {
     return Transaction(
@@ -23,4 +22,5 @@ fun FirebaseTransaction.toRoomTransaction(localUserId: Int, localCategoryId: Int
         amount = amount
     )
 }
+
 

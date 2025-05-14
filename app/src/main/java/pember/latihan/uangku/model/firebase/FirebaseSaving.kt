@@ -18,3 +18,4 @@ fun FirebaseSaving.toRoomSaving(userId: Int): Saving {
         currentAmount = current_amount
     )
 }
+

@@ -5,7 +5,8 @@ import java.util.*
 
 @Entity(tableName = "category")
 data class Category(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
     val name: String,
-    val type: String, // bisa jadi "income" atau "expense"
+    val type: String // "income" atau "expense"
 )

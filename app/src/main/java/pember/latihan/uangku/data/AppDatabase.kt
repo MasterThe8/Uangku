@@ -10,7 +10,7 @@ import pember.latihan.uangku.model.dao.*
 
 @Database(
     entities = [User::class, Category::class, Transaction::class, Saving::class],
-    version = 1
+    version = 3
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -29,7 +29,10 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "uangku_database"
-                ).build()
+                )
+//                    .fallbackToDestructiveMigration()
+                    .build()
+
                 INSTANCE = instance
                 instance
             }

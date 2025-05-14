@@ -6,7 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import pember.latihan.uangku.data.AppDatabase
-import pember.latihan.uangku.data.CategorySeed
+import pember.latihan.uangku.model.seed.CategorySeed
 import pember.latihan.uangku.model.Category
 
 object CategorySyncHelper {
@@ -15,18 +15,16 @@ object CategorySyncHelper {
         val db = AppDatabase.getInstance(context)
         val dao = db.categoryDao()
 
-        val existing = withContext(Dispatchers.IO) { dao.getAll() }
-
-        val toInsert = CategorySeed.defaultCategories.filterNot { seed ->
-            existing.any { it.name == seed.name && it.type == seed.type }
+        return withContext(Dispatchers.IO) {
+            val existing = dao.getAll()
+            val toInsert = CategorySeed.defaultCategories.filter { seed ->
+                existing.none { it.name == seed.name && it.type == seed.type }
+            }
+            if (toInsert.isNotEmpty()) {
+                dao.insertAll(toInsert)
+            }
+            dao.getAll()
         }
-
-        if (toInsert.isNotEmpty()) {
-            dao.insertAll(toInsert)
-        }
-
-        // Return full list after sync
-        return withContext(Dispatchers.IO) { dao.getAll() }
     }
-
 }
+

@@ -8,21 +8,25 @@ import pember.latihan.uangku.model.Category
 
 @Dao
 interface CategoryDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(category: Category)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(categories: List<Category>)
+    suspend fun insertAll(category: List<Category>)
 
     @Query("SELECT * FROM category")
     suspend fun getAll(): List<Category>
 
-    @Query("SELECT id FROM category WHERE name = :name LIMIT 1")
-    suspend fun getIdByName(name: String): Int?
+    @Query("SELECT * FROM category WHERE name = :name")
+    suspend fun getByName(name: String): Category?
 
     @Query("SELECT * FROM category WHERE type = :type")
-    suspend fun getCategoriesByType(type: String): List<Category>
+    suspend fun getByType(type: String): List<Category>
 
-    @Query("SELECT id FROM category WHERE name = :name LIMIT 1")
-    suspend fun getCategoryIdByName(name: String): Int
+    @Query("SELECT * FROM category WHERE name = :name AND type = :type")
+    suspend fun getByNameAndType(name: String, type: String): Category?
+
+    @Query("DELETE FROM category")
+    suspend fun deleteAll()
 }

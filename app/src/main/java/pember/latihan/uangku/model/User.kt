@@ -1,14 +1,14 @@
 package pember.latihan.uangku.model
 
 import androidx.room.*
-import java.util.*
 
-@Entity(tableName = "user")
+@Entity(tableName = "users")
 data class User(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val username: String,
-    val email: String,
-    val passwordHash: String,
-    @ColumnInfo(name = "initial_balance") val initialBalance: Double,
+    val firebaseUid: String,
+    val username: String = "",
+    val email: String = "",
+    @ColumnInfo(name = "password_hash") val passwordHash: String = "",
+    @ColumnInfo(name = "initial_balance") val initialBalance: Double = 0.0,
     @ColumnInfo(name = "is_deleted") val isDeleted: Boolean = false
 )

@@ -41,7 +41,10 @@ class MainActivity : AppCompatActivity() {
         findViewById<Button>(R.id.btnIncome).setOnClickListener {
             startActivity(Intent(this, IncomeActivity::class.java))
         }
+    }
 
+    override fun onResume() {
+        super.onResume()
         showUserData()
     }
 
@@ -61,33 +64,6 @@ class MainActivity : AppCompatActivity() {
             sb.appendLine("👤 ${user.username}")
             sb.appendLine("📧 ${user.email}")
             sb.appendLine("💰 Rp${user.initialBalance.toInt()}")
-            sb.appendLine("\n📄 Transaksi:")
-
-            val transactions = withContext(Dispatchers.IO) {
-                db.transactionDao().getByUser(user.id)
-            }
-
-            if (transactions.isEmpty()) {
-                sb.appendLine("   - Data kosong")
-            } else {
-                transactions.forEach {
-                    sb.appendLine("   - ${it.description} | Rp${it.amount} | ${it.date}")
-                }
-            }
-
-            sb.appendLine("\n🎯 Tabungan:")
-
-            val savings = withContext(Dispatchers.IO) {
-                db.savingDao().getByUser(user.id)
-            }
-
-            if (savings.isEmpty()) {
-                sb.appendLine("   - Data kosong")
-            } else {
-                savings.forEach {
-                    sb.appendLine("   - ${it.title} | Rp${it.currentAmount}/${it.targetAmount}")
-                }
-            }
 
             tvUserInfo.text = sb.toString()
         }
@@ -98,3 +74,4 @@ class MainActivity : AppCompatActivity() {
         scope.cancel()
     }
 }
+

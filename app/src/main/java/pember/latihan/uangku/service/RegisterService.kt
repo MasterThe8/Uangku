@@ -19,6 +19,7 @@ object RegisterService {
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
+        // Buat akun dengan email dan password
         auth.createUserWithEmailAndPassword(email, password)
             .addOnSuccessListener { result ->
                 val uid = result.user?.uid ?: return@addOnSuccessListener
@@ -33,10 +34,12 @@ object RegisterService {
 
                 db.collection("users").document(uid).set(user)
                     .addOnSuccessListener {
-                        SessionManager(context).saveUserId(uid)
+                        SessionManager.getInstance(context).saveUserId(uid)
                         onSuccess()
                     }
-                    .addOnFailureListener { onError("Gagal simpan user di Firestore.") }
+                    .addOnFailureListener {
+                        onError("Gagal simpan user di Firestore.")
+                    }
             }
             .addOnFailureListener {
                 onError(it.message ?: "Registrasi gagal.")

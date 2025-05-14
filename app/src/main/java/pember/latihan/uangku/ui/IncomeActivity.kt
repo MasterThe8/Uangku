@@ -16,6 +16,14 @@ import pember.latihan.uangku.service.IncomeService
 import java.text.SimpleDateFormat
 import java.util.Locale
 import android.app.DatePickerDialog
+import android.util.Log
+import android.widget.TextView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
+import pember.latihan.uangku.data.AppDatabase
+import pember.latihan.uangku.model.dao.UserDao
 import java.util.Calendar
 
 class IncomeActivity : AppCompatActivity() {
@@ -33,19 +41,17 @@ class IncomeActivity : AppCompatActivity() {
         incomeService = IncomeService(applicationContext)
 
         loadCategories()
+        showIncomeTransactions()
 
         binding.btnAddIncome.setOnClickListener {
             addIncome()
         }
+
         binding.etDate.isFocusable = false
         binding.etDate.isClickable = true
         binding.etDate.setOnClickListener {
             showDatePicker()
         }
-        lifecycleScope.launch {
-            incomeService.logAllUsersAndCategories()
-        }
-
     }
 
     private fun loadCategories() {
@@ -79,19 +85,27 @@ class IncomeActivity : AppCompatActivity() {
 
         val dateParsed = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(date)
 
-        val userId = incomeService.getCurrentUserId()
-        val transaction = Transaction(
-            userId = userId,
-            categoryId = selectedCategoryId,
-            description = description,
-            date = dateParsed,
-            amount = nominal
-        )
-
+        // Pindahkan semuanya ke dalam coroutine
         lifecycleScope.launch {
-            incomeService.insertIncome(transaction)
-            Toast.makeText(this@IncomeActivity, "Pemasukan berhasil ditambahkan", Toast.LENGTH_SHORT).show()
-            finish()
+            try {
+                val userId = incomeService.getCurrentUserId(this@IncomeActivity)
+                Log.d("IncomeActivity", "Current userId saat insert: $userId")
+
+                val transaction = Transaction(
+                    userId = userId,
+                    categoryId = selectedCategoryId,
+                    description = description,
+                    date = dateParsed!!,
+                    amount = nominal
+                )
+
+                incomeService.insertIncome(transaction)
+                showIncomeTransactions()
+                Toast.makeText(this@IncomeActivity, "Pemasukan berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+                finish()
+            } catch (e: IllegalStateException) {
+                Toast.makeText(this@IncomeActivity, e.message ?: "Error", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -112,4 +126,44 @@ class IncomeActivity : AppCompatActivity() {
         datePickerDialog.show()
     }
 
+    private fun showIncomeTransactions() {
+        lifecycleScope.launch {
+            try {
+                val db = AppDatabase.getInstance(this@IncomeActivity)
+
+                val userId = incomeService.getCurrentUserId(this@IncomeActivity)
+
+                val incomeTransactions = withContext(Dispatchers.IO) {
+                    db.transactionDao().getIncomeTransactions(userId)
+                }
+
+                val sb = StringBuilder()
+                if (incomeTransactions.isEmpty()) {
+                    sb.appendLine("Belum ada pemasukan.")
+                } else {
+                    incomeTransactions.forEach {
+                        val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(it.date)
+                        sb.appendLine("- ${it.description} | Rp${it.amount.toInt()} | $formattedDate")
+                    }
+                }
+
+                val allTransactions = withContext(Dispatchers.IO) {
+                    db.transactionDao().getAll()
+                }
+                Log.d("IncomeActivity", "All transactions in DB: $allTransactions")
+
+                val transactions = withContext(Dispatchers.IO) {
+                    db.transactionDao().getByUser(userId)
+                }
+                Log.d("IncomeActivity", "Transactions by userId: $transactions")
+
+                binding.tvIncomeList.text = sb.toString()
+
+            } catch (e: IllegalStateException) {
+                Log.e("IncomeActivity", "Error: ${e.message}")
+                Toast.makeText(this@IncomeActivity, "User belum login", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 }
+

@@ -9,16 +9,20 @@ data class FirebaseUser(
     var passwordHash: String = "",
     var initial_balance: Double = 0.0,
     var is_deleted: Boolean = false
-
 )
 
 fun FirebaseUser.toRoomUser(): User {
     return User(
-        username = username,
-        email = email,
+        id = 0,
+        firebaseUid = this.id,
+        username = this.username,
+        email = this.email,
         passwordHash = "",
-        initialBalance = initial_balance,
-        isDeleted = is_deleted
+        initialBalance = this.initial_balance,
+        isDeleted = false
     )
 }
+
+
+
 

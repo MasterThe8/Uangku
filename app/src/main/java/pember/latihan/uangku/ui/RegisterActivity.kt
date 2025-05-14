@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import pember.latihan.uangku.R
 import pember.latihan.uangku.MainActivity
 import pember.latihan.uangku.service.RegisterService
+import pember.latihan.uangku.utils.DataResetHelper
+import pember.latihan.uangku.utils.SessionManager
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -35,36 +37,47 @@ class RegisterActivity : AppCompatActivity() {
             val username = etUsername.text.toString().trim()
             val email = etEmail.text.toString().trim()
             val password = etPassword.text.toString().trim()
-            val saldo = etSaldo.text.toString().trim().toDoubleOrNull()
-
             val confirmPassword = etConfirmPassword.text.toString().trim()
+            val saldo = etSaldo.text.toString().trim().toDoubleOrNull()
 
             if (username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() || saldo == null) {
                 Toast.makeText(this, "Semua field wajib diisi!", Toast.LENGTH_SHORT).show()
-                Log.d("EditProfile", "Username: $username, Email: $email, Saldo: $saldo")
                 return@setOnClickListener
             }
 
             if (password != confirmPassword) {
-                Log.d("Password", "Current Password: $password, Confirm Password: $confirmPassword")
                 Toast.makeText(this, "Password dan konfirmasi tidak cocok!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            RegisterService.register(email, password, username, saldo, this,
-                onSuccess = {
-                    Toast.makeText(this, "Registrasi berhasil!", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
-                },
-                onError = {
-                    Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            val sessionManager = SessionManager.getInstance(this)
+            val currentUserId = sessionManager.getUserId()
+
+            if (currentUserId != null) {
+                DataResetHelper.clearLocalDataWithSync(this, currentUserId) {
+                    sessionManager.clearSession()
+                    registerUser(email, password, username, saldo)
                 }
-            )
+            } else {
+                registerUser(email, password, username, saldo)
+            }
         }
 
         tvToLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
+    }
+
+    private fun registerUser(email: String, password: String, username: String, saldo: Double) {
+        RegisterService.register(email, password, username, saldo, this,
+            onSuccess = {
+                Toast.makeText(this, "Registrasi berhasil!", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, MainActivity::class.java))
+                finish()
+            },
+            onError = {
+                Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 }

@@ -30,7 +30,7 @@ class SplashActivity : AppCompatActivity() {
             CategorySyncHelper.syncCategories(this@SplashActivity)
 
             Handler(Looper.getMainLooper()).postDelayed({
-                val sessionManager = SessionManager(this@SplashActivity)
+                val sessionManager = SessionManager.getInstance(this@SplashActivity)
                 val uid = sessionManager.getUserId()
 
                 val nextIntent = if (uid != null) {
