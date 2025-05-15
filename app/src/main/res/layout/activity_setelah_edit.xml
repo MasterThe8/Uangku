@@ -69,7 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@drawable/input_background"
-            android:hint="fifi@gmail.com"
+            android:hint="fifi99@gmail.com"
             android:padding="12dp"
             android:enabled="false" />
 
