@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backgroudUtama">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/tombol_back"
+                android:padding="4dp" />
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/history"
+                android:scaleType="centerCrop"
+                android:layout_marginEnd="8dp"/>
+        </LinearLayout>
+
+        <!-- Pie Chart -->
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:src="@drawable/grafik"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Total Pengeluaran -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_biru"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="Pengeluaran\nRp. 5.000.000,00"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <!-- Form Input -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_abu"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pengeluaran"
+                android:background="@drawable/underline_blue"
+                android:textSize="18sp"
+                android:textColor="#00529B"
+                android:textStyle="bold"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"/>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp">
+
+                <EditText
+                    android:id="@+id/editKategori"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Kategori"
+                    android:background="@null"
+                    android:paddingEnd="36dp"
+                    android:inputType="text"
+                    android:backgroundTint="#000000" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/dropdown"
+                    android:layout_alignBottom="@id/editKategori"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"/>
+            </RelativeLayout>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nominal"
+                android:background="@null"
+                android:paddingBottom="8dp"
+                android:inputType="number"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="#000000"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Deskripsi"
+                android:background="@null"
+                android:paddingBottom="8dp"
+                android:layout_marginBottom="8dp"
+                android:backgroundTint="#000000"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Hari/Tanggal"
+                android:background="@null"
+                android:paddingBottom="8dp"
+                android:inputType="date"
+                android:backgroundTint="#000000"/>
+
+            <!-- Tombol -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end"
+                android:layout_marginTop="16dp">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hapus"
+                    android:background="@drawable/bg_merahMuda_bg"
+                    android:textColor="#000000"
+                    android:layout_marginEnd="8dp"/>
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Simpan"
+                    android:background="@drawable/bg_hijauMuda_bg"
+                    android:textColor="#000000"/>
+            </LinearLayout>
+            <!-- History Header -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="History"
+                    android:textSize="16sp"
+                    android:textColor="#000000"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:text="view all"
+                    android:background="@drawable/underline_blue"
+                    android:textSize="14sp"
+                    android:textColor="#000000"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- History Items -->
+            <!-- 1: Makanan -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_merah"
+                android:padding="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/makanan"
+                    android:layout_marginEnd="12dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Liburan"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rp. 28.000,00"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="12dp"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="01/02/2025"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+
+            <!-- 2: Belanja -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_hijau"
+                android:padding="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/belanja"
+                    android:layout_marginEnd="12dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Belanja"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rp. 28.000,00"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="12dp"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="01/02/2025"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+
+            <!--3: Liburan-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/bg_biru"
+                android:padding="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:src="@drawable/liburan"
+                    android:layout_marginEnd="12dp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Liburan"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rp. 28.000,00"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="12dp"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="01/02/2025"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
