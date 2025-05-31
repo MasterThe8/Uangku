@@ -32,34 +32,36 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingLeft="20dp"
-        android:paddingTop="10dp"
-        android:paddingRight="20dp"
-        android:paddingBottom="10dp">
+        android:layout_height="37dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/bar_btn_pemasukkan"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btnPemasukan"
+            android:layout_width="0dp"
             android:layout_height="39dp"
             android:layout_marginLeft="11dp"
             android:layout_marginRight="11dp"
             android:layout_weight="1"
-            android:backgroundTint="#9ACBD0"
+            android:background="#00FFFFFF"
             android:text="Pemasukan"
-            android:textColor="#48A6A7"
-            android:layout_width="0dp"/>
+            android:textColor="#48A6A7" />
 
         <Button
             android:id="@+id/btnPengeluaran"
+            android:layout_width="0dp"
             android:layout_height="39dp"
             android:layout_marginLeft="11dp"
             android:layout_marginRight="11dp"
             android:layout_weight="1"
+            android:background="#00FFFFFF"
             android:backgroundTint="#4DA6A7"
             android:text="Pengeluaran"
-            android:textColor="@android:color/white"
-            android:layout_width="0dp"/>
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
     <LinearLayout
