@@ -1,8 +1,12 @@
 package pember.latihan.uangku.utils
 
 import android.content.Context
+import android.content.Intent
 import android.util.Log
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,6 +20,7 @@ import pember.latihan.uangku.model.firebase.FirebaseUser
 import pember.latihan.uangku.model.firebase.toRoomSaving
 import pember.latihan.uangku.model.firebase.toRoomTransaction
 import pember.latihan.uangku.model.firebase.toRoomUser
+import pember.latihan.uangku.ui.LoginActivity
 
 object FirebaseSyncHelper {
 
@@ -134,5 +139,46 @@ object FirebaseSyncHelper {
 
         mapped.forEach { appDb.transactionDao().insert(it) }
         Log.d("FirebaseSync", "✅ Transactions inserted: ${mapped.size}")
+    }
+
+    suspend fun syncEmailIfChanged(context: Context) {
+        val auth = FirebaseAuth.getInstance()
+        val user = auth.currentUser ?: return
+
+        try {
+            user.reload().await()
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Log.e("FirebaseSync", "⚠ User credential invalid. Must re-login.")
+            // Hapus session lokal jika perlu
+            SessionManager.getInstance(context).clearSession()
+
+            // Arahkan ke LoginActivity
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(intent)
+            return
+        } catch (e: Exception) {
+            Log.e("FirebaseSync", "❌ Error reloading user: ${e.message}", e)
+            return
+        }
+
+        val uid = user.uid
+        val emailFromAuth = user.email ?: return
+
+        val db = AppDatabase.getInstance(context)
+        val localUser = db.userDao().getActiveUser() ?: return
+
+        if (localUser.email != emailFromAuth) {
+            Log.d("FirebaseSync", "✉ Email mismatch detected. Syncing to Firestore & Room...")
+
+            FirebaseFirestore.getInstance()
+                .collection("users").document(uid)
+                .set(mapOf("email" to emailFromAuth), SetOptions.merge()).await()
+
+            val updatedUser = localUser.copy(email = emailFromAuth)
+            db.userDao().insert(updatedUser)
+
+            Log.d("FirebaseSync", "✅ Email synced to Firestore & Room: $emailFromAuth")
+        }
     }
 }

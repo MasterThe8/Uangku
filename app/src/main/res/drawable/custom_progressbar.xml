@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Track (background tak terisi) -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <solid android:color="#E0E0E0" /> <!-- abu terang -->
+        </shape>
+    </item>
+
+    <!-- Secondary progress (jika dipakai) -->
+    <item android:id="@android:id/secondaryProgress">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="4dp" />
+                <solid android:color="#80B2DFE0"/> <!-- biru muda transparan -->
+            </shape>
+        </clip>
+    </item>
+
+    <!-- Primary progress -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="4dp" />
+                <solid android:color="#2A74D2" /> <!-- biru toska -->
+            </shape>
+        </clip>
+    </item>
+</layer-list>

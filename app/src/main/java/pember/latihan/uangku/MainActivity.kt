@@ -1,45 +1,63 @@
 package pember.latihan.uangku
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import java.text.DecimalFormat
 import kotlinx.coroutines.*
 import pember.latihan.uangku.data.AppDatabase
-import pember.latihan.uangku.ui.LoginActivity
-import pember.latihan.uangku.ui.RegisterActivity
-import pember.latihan.uangku.ui.EditProfileActivity
-import pember.latihan.uangku.ui.IncomeActivity
-import pember.latihan.uangku.utils.SessionManager
+import pember.latihan.uangku.ui.*
+import pember.latihan.uangku.utils.FirebaseSyncHelper
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var tvUserInfo: TextView
+    private lateinit var tvHelloUser: TextView
+    private lateinit var imgProfile: ImageView
+    private lateinit var btnPengeluaranAction: LinearLayout
+    private lateinit var btnPendapatanAction: LinearLayout
+    private lateinit var btnTabungan: LinearLayout
+    private lateinit var tvBalance: TextView
+    private lateinit var tvTotalIncome: TextView
+    private lateinit var tvTotalExpense: TextView
+    private val numberFormat = DecimalFormat("#,###")
+
     private val scope = CoroutineScope(Dispatchers.Main + Job())
 
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        tvUserInfo = findViewById(R.id.tvUserInfo)
+        tvHelloUser = findViewById(R.id.tvHelloUser)
+        imgProfile = findViewById(R.id.imgProfile)
+        btnPengeluaranAction = findViewById(R.id.btnPengeluaranAction)
+        btnPendapatanAction = findViewById(R.id.btnPendapatanAction)
+        btnTabungan = findViewById(R.id.btnTabungan)
+        tvBalance = findViewById(R.id.tvBalance)
+        tvTotalIncome = findViewById(R.id.tvTotalIncome)
+        tvTotalExpense = findViewById(R.id.tvTotalExpense)
 
-        findViewById<Button>(R.id.btnLogin).setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
+        imgProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
         }
 
-        findViewById<Button>(R.id.btnRegister).setOnClickListener {
-            startActivity(Intent(this, RegisterActivity::class.java))
+        btnPengeluaranAction.setOnClickListener {
+            startActivity(Intent(this, ExpenseActivity::class.java))
         }
 
-        findViewById<Button>(R.id.btnEditProfile).setOnClickListener {
-            startActivity(Intent(this, EditProfileActivity::class.java))
-        }
-
-        findViewById<Button>(R.id.btnIncome).setOnClickListener {
+        btnPendapatanAction.setOnClickListener {
             startActivity(Intent(this, IncomeActivity::class.java))
+        }
+
+        btnTabungan.setOnClickListener {
+            startActivity(Intent(this, SavingActivity::class.java))
+        }
+
+        lifecycleScope.launch {
+            FirebaseSyncHelper.syncEmailIfChanged(this@MainActivity)
         }
     }
 
@@ -56,16 +74,25 @@ class MainActivity : AppCompatActivity() {
             }
 
             if (user == null) {
-                tvUserInfo.text = "Belum login."
+                tvHelloUser.text = "Belum login."
+                tvBalance.text = "-"
+                tvTotalIncome.text = "-"
+                tvTotalExpense.text = "-"
                 return@launch
             }
 
-            val sb = StringBuilder()
-            sb.appendLine("👤 ${user.username}")
-            sb.appendLine("📧 ${user.email}")
-            sb.appendLine("💰 Rp${user.initialBalance.toInt()}")
+            tvHelloUser.text = "Halo, ${user.username}!"
 
-            tvUserInfo.text = sb.toString()
+            val (initialBalance, totalIncome, totalExpense) = withContext(Dispatchers.IO) {
+                val income = db.transactionDao().getTotalIncome(user.id) ?: 0.0
+                val expense = db.transactionDao().getTotalExpense(user.id) ?: 0.0
+                val initBalance = db.userDao().getInitialBalance(user.id) ?: 0.0
+                Triple(initBalance, income, expense)
+            }
+
+            tvBalance.text = "Rp ${numberFormat.format(initialBalance)}"
+            tvTotalIncome.text = "Rp ${numberFormat.format(totalIncome)}"
+            tvTotalExpense.text = "Rp ${numberFormat.format(totalExpense)}"
         }
     }
 
@@ -74,4 +101,3 @@ class MainActivity : AppCompatActivity() {
         scope.cancel()
     }
 }
-

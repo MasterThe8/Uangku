@@ -31,6 +31,9 @@ interface UserDao {
     @Query("SELECT * FROM users WHERE email = :email")
     suspend fun getUserByEmail(email: String): User?
 
+    @Query("SELECT initial_balance FROM users WHERE id = :userId")
+    suspend fun getInitialBalance(userId: Int): Double?
+
     @Query("DELETE FROM users")
     suspend fun deleteAll()
 }

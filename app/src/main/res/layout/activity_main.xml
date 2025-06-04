@@ -1,49 +1,211 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp">
+    android:background="@drawable/beranda"
+    tools:context=".MainActivity">
 
+    <!-- ==================== HEADER (Tidak Ikut Scroll) ==================== -->
     <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="match_parent"
+        android:id="@+id/headerLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal">
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- TextView yang memakan ruang sekalian mendorong ImageView ke kanan -->
         <TextView
-            android:id="@+id/tvUserInfo"
-            android:text="Belum login"
-            android:textSize="16sp"
-            android:layout_width="match_parent"
+            android:id="@+id/tvHelloUser"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp" />
+            android:layout_weight="1"
+            android:textColor="#21588A"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="Halo, User!" />
 
-        <Button
-            android:id="@+id/btnLogin"
-            android:text="Login"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/btnRegister"
-            android:text="Register"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
-        <Button
-            android:id="@+id/btnEditProfile"
-            android:text="Edit Profile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
-        <Button
-            android:id="@+id/btnIncome"
-            android:text="Pemasukan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp" />
-
+        <!-- Icon Profil, klik -> EditProfileActivity -->
+        <ImageView
+            android:id="@+id/imgProfile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/circle_bg"
+            android:contentDescription="Profil" />
     </LinearLayout>
-</ScrollView>
+
+    <!-- ==================== SCROLLABLE CONTENT BAWAH HEADER ==================== -->
+    <ScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- ======= Bagian Saldo ======= -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/rounded_top_background3"
+                android:padding="16dp"
+                android:layout_marginBottom="16dp"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Saldo"
+                    android:textColor="#008080"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvBalance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:textColor="#0F2C59"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- ======= Bagian Pengeluaran & Pendapatan ======= -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="16dp">
+
+                <!-- Pengeluaran -->
+                <LinearLayout
+                    android:id="@+id/btnPengeluaran"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/rounded_top_background2"
+                    android:padding="12dp"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="#008080"
+                    android:backgroundTintMode="src_atop"
+                    android:elevation="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pengeluaran"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/tvTotalExpense"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:textSize="16sp" />
+                </LinearLayout>
+
+                <!-- Pendapatan -->
+                <LinearLayout
+                    android:id="@+id/btnPendapatan"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/rounded_top_background2"
+                    android:padding="12dp"
+                    android:layout_marginStart="8dp"
+                    android:backgroundTint="#2973B2"
+                    android:elevation="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Pendapatan"
+                        android:textColor="#FFFFFF"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/tvTotalIncome"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#FFFFFF"
+                        android:textStyle="bold"
+                        android:textSize="16sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ======= Judul Aksi Pengelolaan Keuangan ======= -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="26dp"
+                android:text="Yuk, kelola keuangan kamu!"
+                android:textColor="#0F2C59"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <!-- ======= Tombol Aksi: Pengeluaran / Pendapatan / Tabungan ======= -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <!-- Kosong karena hanya container, kliknya ditangani di Activity -->
+
+                <LinearLayout
+                    android:id="@+id/btnPendapatanAction"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/pendapatan"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/btnPengeluaranAction"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="@drawable/pengeluaran"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp" />
+
+                <LinearLayout
+                    android:id="@+id/btnTabungan"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:background="@drawable/menabung"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="16dp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

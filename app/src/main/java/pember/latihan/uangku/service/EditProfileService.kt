@@ -34,28 +34,6 @@ object EditProfileService {
             ?: return Result.failure(Exception("User tidak ditemukan di FirebaseAuth"))
 
         return try {
-            withContext(Dispatchers.IO) {
-                FirebaseSyncHelper.syncToFirebase(context, uid)
-            }
-
-            val userUpdate = mapOf(
-                "username" to newUsername,
-                "email" to newEmail,
-                "initial_balance" to newSaldo
-            )
-            firestore.collection("users").document(uid).set(userUpdate, SetOptions.merge()).await()
-
-            withContext(Dispatchers.IO) {
-                userDao.getActiveUser()?.let { localUser ->
-                    val updatedUser = localUser.copy(
-                        username = newUsername,
-                        email = newEmail,
-                        initialBalance = newSaldo
-                    )
-                    userDao.insert(updatedUser)
-                }
-            }
-
             val emailChanged = currentUser.email != newEmail
             val passwordChanged = !newPassword.isNullOrBlank()
 
@@ -69,6 +47,11 @@ object EditProfileService {
 
                 if (emailChanged) {
                     currentUser.verifyBeforeUpdateEmail(newEmail).await()
+                    Log.d("EditProfileService", "✅ verifyBeforeUpdateEmail berhasil ke $newEmail")
+
+                    return Result.failure(
+                        Exception("Verifikasi dikirim ke $newEmail. Silakan klik link di email tersebut untuk menyelesaikan perubahan.")
+                    )
                 }
 
                 if (passwordChanged) {
@@ -77,19 +60,37 @@ object EditProfileService {
                     }
                     currentUser.updatePassword(requireNotNull(newPassword)).await()
                 }
+            }
 
-                SessionManager.getInstance(context).clearSession()
-                FirebaseAuth.getInstance().signOut()
+            val finalEmail = currentUser.email!!
 
-                withContext(Dispatchers.IO) {
-                    FirebaseSyncHelper.syncFromFirebase(context, uid)
+            val userUpdate = mapOf(
+                "username" to newUsername,
+                "email" to finalEmail,
+                "initial_balance" to newSaldo
+            )
+            firestore.collection("users").document(uid).set(userUpdate, SetOptions.merge()).await()
+
+            withContext(Dispatchers.IO) {
+                userDao.getActiveUser()?.let { localUser ->
+                    val updatedUser = localUser.copy(
+                        username = newUsername,
+                        email = finalEmail,
+                        initialBalance = newSaldo
+                    )
+                    userDao.insert(updatedUser)
                 }
-
-                return Result.failure(Exception("Perubahan email atau password berhasil.\nSilakan verifikasi email baru jika diminta, dan login kembali."))
             }
 
             withContext(Dispatchers.IO) {
                 FirebaseSyncHelper.syncFromFirebase(context, uid)
+            }
+
+            if (emailChanged || passwordChanged) {
+                SessionManager.getInstance(context).clearSession()
+                auth.signOut()
+
+                return Result.failure(Exception("Perubahan email/password berhasil. Silakan login kembali."))
             }
 
             return Result.success(Unit)

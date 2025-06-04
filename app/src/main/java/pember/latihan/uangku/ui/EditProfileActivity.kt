@@ -1,12 +1,13 @@
 package pember.latihan.uangku.ui
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
-import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 import pember.latihan.uangku.R
 import pember.latihan.uangku.data.AppDatabase
@@ -21,8 +22,10 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var etCurrentPassword: EditText
     private lateinit var etNewPassword: EditText
     private lateinit var etConfirmPassword: EditText
+    private lateinit var btnBack: ImageView
     private lateinit var btnSave: Button
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editprofile)
@@ -33,13 +36,14 @@ class EditProfileActivity : AppCompatActivity() {
         etCurrentPassword = findViewById(R.id.etCurrentPassword)
         etNewPassword = findViewById(R.id.etNewPassword)
         etConfirmPassword = findViewById(R.id.etConfirmPassword)
+        btnBack = findViewById(R.id.btnBack)
         btnSave = findViewById(R.id.btnSave)
 
         lifecycleScope.launch {
-            val uid = SessionManager.getInstance(this@EditProfileActivity).getUserId()
-            if (uid != null) {
-                FirebaseSyncHelper.syncFromFirebase(this@EditProfileActivity, uid)
-            }
+//            val uid = SessionManager.getInstance(this@EditProfileActivity).getUserId()
+//            if (uid != null) {
+//                FirebaseSyncHelper.syncFromFirebase(this@EditProfileActivity, uid)
+//            }
 
             val user = AppDatabase.getInstance(this@EditProfileActivity)
                 .userDao().getActiveUser()
@@ -49,6 +53,11 @@ class EditProfileActivity : AppCompatActivity() {
                 etEmail.setText(it.email)
                 etSaldo.setText(it.initialBalance.toString())
             }
+
+        }
+
+        btnBack.setOnClickListener{
+            finish()
         }
 
         btnSave.setOnClickListener {
@@ -88,14 +97,17 @@ class EditProfileActivity : AppCompatActivity() {
                 } else {
                     val message = result.exceptionOrNull()?.message ?: "Gagal memperbarui"
 
-                    if (message.startsWith("Perubahan email atau password berhasil")) {
+                    if (message.startsWith("Perubahan email atau password berhasil") ||
+                        message.contains("Verifikasi dikirim ke")) {
+
                         Toast.makeText(this@EditProfileActivity, message, Toast.LENGTH_LONG).show()
                         SessionManager.getInstance(this@EditProfileActivity).clearSession()
                         val intent = Intent(this@EditProfileActivity, LoginActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                         startActivity(intent)
+
                     } else {
-                        Toast.makeText(this@EditProfileActivity, "Gagal: $message", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this@EditProfileActivity, message, Toast.LENGTH_LONG).show()
                     }
                 }
 

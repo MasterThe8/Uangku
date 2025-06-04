@@ -1,12 +1,14 @@
 package pember.latihan.uangku.ui
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,9 +17,7 @@ import pember.latihan.uangku.R
 import pember.latihan.uangku.MainActivity
 import pember.latihan.uangku.data.AppDatabase
 import pember.latihan.uangku.model.User
-import pember.latihan.uangku.service.LoginService
 import pember.latihan.uangku.utils.FirebaseSyncHelper
-import pember.latihan.uangku.utils.DataResetHelper
 import pember.latihan.uangku.utils.SessionManager
 
 class LoginActivity : AppCompatActivity() {
@@ -31,6 +31,22 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        FirebaseDynamicLinks.getInstance()
+            .getDynamicLink(intent)
+            .addOnSuccessListener(this) { pendingDynamicLinkData ->
+                val deepLink: Uri? = pendingDynamicLinkData?.link
+                if (deepLink != null && deepLink.toString().contains("emailChanged")) {
+                    Toast.makeText(this, "Email berhasil diverifikasi. Silakan login ulang.", Toast.LENGTH_LONG).show()
+
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
+            }
+            .addOnFailureListener(this) { e ->
+                Log.w("MainActivity", "Gagal membaca dynamic link", e)
+        }
 
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
@@ -62,11 +78,9 @@ class LoginActivity : AppCompatActivity() {
         val currentUid = sessionManager.getUserId()
 
         if (currentUid != null) {
-            // Sinkronisasi data user saat ini dulu
             FirebaseSyncHelper.syncToFirebase(context, currentUid) {
                 Log.d("Login", "✅ Data user sebelumnya disinkron ke Firebase.")
 
-                // Setelah selesai sync, baru login ke user baru
                 doLogin(email, password)
             }
         } else {
@@ -112,10 +126,8 @@ class LoginActivity : AppCompatActivity() {
                 Log.d("LoginActivity", "ℹ User sudah ada di Room.")
             }
 
-            // Tunggu sinkronisasi data Firebase -> Room
             FirebaseSyncHelper.syncFromFirebase(this@LoginActivity, firebaseUid)
 
-            // Setelah sinkronisasi selesai, pindah ke MainActivity
             withContext(Dispatchers.Main) {
                 Toast.makeText(this@LoginActivity, "Login berhasil", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this@LoginActivity, MainActivity::class.java))

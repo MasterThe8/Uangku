@@ -24,9 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.unit.TextUnit
 import androidx.core.content.ContextCompat
 import androidx.core.view.setPadding
 import androidx.lifecycle.lifecycleScope
@@ -36,39 +36,37 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import pember.latihan.uangku.R
 import pember.latihan.uangku.data.AppDatabase
+import pember.latihan.uangku.databinding.ActivityExpenseBinding
 import pember.latihan.uangku.model.Category
 import pember.latihan.uangku.model.Transaction
 import pember.latihan.uangku.model.dao.TransactionWithCategory
-import pember.latihan.uangku.service.IncomeService
+import pember.latihan.uangku.service.ExpenseService
+import pember.latihan.uangku.ui.component.PieChart
 import java.text.SimpleDateFormat
 import java.util.*
 
-class IncomeActivity : AppCompatActivity() {
-    private lateinit var btnAddIncome: Button
-    private lateinit var llCategoryContainer: LinearLayout
-    private lateinit var incomeService: IncomeService
-    private lateinit var tvTotalIncome: TextView
-    private var categoryList: List<Category> = emptyList()
+class ExpenseActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityExpenseBinding
+    private lateinit var expenseService: ExpenseService
+    private lateinit var categoryList: List<Category>
     private var selectedUserId: Int = -1
     private val numberFormat = DecimalFormat("###,###,###")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_income)
+        binding = ActivityExpenseBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        btnAddIncome = findViewById(R.id.btnAddIncome)
-        llCategoryContainer = findViewById(R.id.llCategoryContainer)
-        incomeService = IncomeService(applicationContext)
-        tvTotalIncome = findViewById(R.id.tvTotalIncome)
+        expenseService = ExpenseService(applicationContext)
 
         lifecycleScope.launch {
-            selectedUserId = incomeService.getCurrentUserId(this@IncomeActivity)
+            selectedUserId = expenseService.getCurrentUserId(this@ExpenseActivity)
             loadAndDisplayCategories()
-            showIncomeTransactions()
+            showExpenseTransactions()
         }
 
-        btnAddIncome.setOnClickListener {
-            showAddIncomeDialog()
+        binding.btnAddExpense.setOnClickListener {
+            showAddExpenseDialog()
         }
 
         findViewById<ImageView>(R.id.btnBack).setOnClickListener {
@@ -80,30 +78,26 @@ class IncomeActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun fetchCategoriesFromService(): List<Category> {
-        return withContext(Dispatchers.IO) {
-            incomeService.getIncomeCategories()
-        }
+    private suspend fun fetchExpenseCategories(): List<Category> = withContext(Dispatchers.IO) {
+        expenseService.getExpenseCategories()
     }
 
-    private suspend fun fetchIncomeTransactionsForUser(): List<Transaction> {
-        return withContext(Dispatchers.IO) {
-            AppDatabase
-                .getInstance(this@IncomeActivity)
-                .transactionDao()
-                .getIncomeTransactions(selectedUserId)
-        }
+    private suspend fun fetchExpenseTransactionsForUser(): List<Transaction> = withContext(Dispatchers.IO) {
+        AppDatabase
+            .getInstance(this@ExpenseActivity)
+            .transactionDao()
+            .getExpenseTransactions(selectedUserId)
     }
 
     private fun loadAndDisplayCategories() {
         lifecycleScope.launch {
-            categoryList = fetchCategoriesFromService()
-            val allIncomeTrans = fetchIncomeTransactionsForUser()
+            categoryList = fetchExpenseCategories()
+            val allExpenseTrans = fetchExpenseTransactionsForUser()
 
-            llCategoryContainer.removeAllViews()
+            binding.llCategoryContainer.removeAllViews()
 
             for (category in categoryList) {
-                val transForCat = allIncomeTrans.filter { it.categoryId == category.id }
+                val transForCat = allExpenseTrans.filter { it.categoryId == category.id }
                 val totalAmount = transForCat.sumOf { it.amount }
                 val lastDateString = if (transForCat.isNotEmpty()) {
                     val latestDate: Date = transForCat.maxByOrNull { it.date }!!.date
@@ -113,7 +107,7 @@ class IncomeActivity : AppCompatActivity() {
                 }
 
                 val categoryCard = createCategoryCard(category.name, totalAmount, lastDateString)
-                llCategoryContainer.addView(categoryCard)
+                binding.llCategoryContainer.addView(categoryCard)
             }
         }
     }
@@ -129,7 +123,6 @@ class IncomeActivity : AppCompatActivity() {
 
         val card = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setBackgroundColor(ContextCompat.getColor(this@IncomeActivity, R.color.income_gaji))
             elevation = dpToPx(2f).toFloat()
             setPadding(paddingPx, paddingPx, paddingPx, paddingPx)
             layoutParams = LinearLayout.LayoutParams(
@@ -142,21 +135,21 @@ class IncomeActivity : AppCompatActivity() {
 
         val tvTitle = TextView(this).apply {
             text = categoryName
-            setTextColor(ContextCompat.getColor(this@IncomeActivity, R.color.black))
+            setTextColor(ContextCompat.getColor(this@ExpenseActivity, R.color.black))
             textSize = 16f
             setTypeface(null, android.graphics.Typeface.BOLD)
         }
 
         val tvTotal = TextView(this).apply {
             text = "Rp ${numberFormat.format(totalAmount)}"
-            setTextColor(ContextCompat.getColor(this@IncomeActivity, R.color.black))
+            setTextColor(ContextCompat.getColor(this@ExpenseActivity, R.color.black))
             textSize = 16f
             setTypeface(null, android.graphics.Typeface.BOLD)
         }
 
         val tvDate = TextView(this).apply {
             text = lastDateText
-            setTextColor(ContextCompat.getColor(this@IncomeActivity, R.color.black))
+            setTextColor(ContextCompat.getColor(this@ExpenseActivity, R.color.black))
             textSize = 14f
             setTypeface(null, android.graphics.Typeface.BOLD)
         }
@@ -168,8 +161,8 @@ class IncomeActivity : AppCompatActivity() {
         return card
     }
 
-    private fun showAddIncomeDialog() {
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_income, null)
+    private fun showAddExpenseDialog() {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_expense, null)
         val spinnerCategory = dialogView.findViewById<Spinner>(R.id.spinnerCategory)
         val etNominal = dialogView.findViewById<EditText>(R.id.etNominal)
         val etDescription = dialogView.findViewById<EditText>(R.id.etDescription)
@@ -188,13 +181,13 @@ class IncomeActivity : AppCompatActivity() {
         spinnerCategory.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
-                view: android.view.View?,
+                view: View?,
                 position: Int,
                 id: Long
             ) {
                 chosenCategoryId = categoryList[position].id
             }
-            override fun onNothingSelected(parent: AdapterView<*>) {}
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         etDate.setOnClickListener {
@@ -213,7 +206,7 @@ class IncomeActivity : AppCompatActivity() {
 
         val alert = AlertDialog.Builder(this)
             .setView(dialogView)
-            .setTitle("Tambah Pemasukan")
+            .setTitle("Tambah Pengeluaran")
             .setPositiveButton("SIMPAN", null)
             .setNegativeButton("BATAL") { dialog, _ -> dialog.dismiss() }
             .create()
@@ -248,13 +241,18 @@ class IncomeActivity : AppCompatActivity() {
                         amount = nominalValue
                     )
 
-                    incomeService.insertIncome(newTx)
+                    try {
+                        val expenseService = ExpenseService(applicationContext)
+                        expenseService.insertExpense(newTx)
 
-                    loadAndDisplayCategories()
-                    showIncomeTransactions()
+                        loadAndDisplayCategories()
+                        showExpenseTransactions()
 
-                    Toast.makeText(this@IncomeActivity, "Pemasukan berhasil disimpan", Toast.LENGTH_SHORT).show()
-                    alert.dismiss()
+                        Toast.makeText(this@ExpenseActivity, "Pengeluaran berhasil disimpan", Toast.LENGTH_SHORT).show()
+                        alert.dismiss()
+                    } catch (e: Exception) {
+                        Toast.makeText(this@ExpenseActivity, "Gagal menyimpan pengeluaran: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         }
@@ -262,32 +260,32 @@ class IncomeActivity : AppCompatActivity() {
         alert.show()
     }
 
-    private fun showIncomeTransactions() {
+    private fun showExpenseTransactions() {
         lifecycleScope.launch {
             try {
-                val db = AppDatabase.getInstance(this@IncomeActivity)
+                val db = AppDatabase.getInstance(this@ExpenseActivity)
                 val userId = selectedUserId
 
-                val totalIncome = withContext(Dispatchers.IO) {
-                    db.transactionDao().getTotalIncome(userId) ?: 0.0
+                val totalExpense = withContext(Dispatchers.IO) {
+                    db.transactionDao().getTotalExpense(userId) ?: 0.0
                 }
-                tvTotalIncome.text = "Rp ${numberFormat.format(totalIncome)}"
+                binding.tvTotalExpense.text = "Rp ${numberFormat.format(totalExpense)}"
 
-                val incomeTransactions = withContext(Dispatchers.IO) {
-                    db.transactionDao().getIncomeTransactionsWithCategory(userId)
+                val expenseTransactions = withContext(Dispatchers.IO) {
+                    db.transactionDao().getExpenseTransactionsWithCategory(userId)
                 }
 
-                llCategoryContainer.removeAllViews()
+                binding.llCategoryContainer.removeAllViews()
 
-                if (incomeTransactions.isEmpty()) {
-                    val emptyView = TextView(this@IncomeActivity).apply {
-                        text = "Belum ada pemasukan."
+                if (expenseTransactions.isEmpty()) {
+                    val emptyView = TextView(this@ExpenseActivity).apply {
+                        text = "Belum ada pengeluaran."
                         textSize = 16f
                         setPadding(10, 10, 10, 10)
                     }
-                    llCategoryContainer.addView(emptyView)
+                    binding.llCategoryContainer.addView(emptyView)
 
-                    setupPieChart(
+                    setupPieChartExpense(
                         values = listOf(1f),
                         colors = listOf(ComposeColor.LightGray)
                     )
@@ -295,7 +293,7 @@ class IncomeActivity : AppCompatActivity() {
                 }
 
                 val groupedByCategory: Map<Int, List<TransactionWithCategory>> =
-                    incomeTransactions.groupBy { it.category.id }
+                    expenseTransactions.groupBy { it.category.id }
 
                 val valuesList = mutableListOf<Float>()
                 val colorsList = mutableListOf<ComposeColor>()
@@ -313,7 +311,7 @@ class IncomeActivity : AppCompatActivity() {
 
                     val itemView = layoutInflater.inflate(
                         R.layout.item_transaction,
-                        llCategoryContainer,
+                        binding.llCategoryContainer,
                         false
                     )
 
@@ -336,40 +334,49 @@ class IncomeActivity : AppCompatActivity() {
                     tvDate.text = formattedDate
 
                     val colorResId = when (categoryName.lowercase().replace(" ", "_")) {
-                        "uang_kaget"           -> R.color.income_uang_kaget
-                        "gaji"                 -> R.color.income_gaji
-                        "hadiah"               -> R.color.income_hadiah
-                        "uang_saku"            -> R.color.income_uang_saku
-                        "pendapatan_lainnya"   -> R.color.income_pendapatan_lainnya
-                        else                   -> R.color.black
+                        "makanan"       -> R.color.expense_makanan
+                        "belanja"       -> R.color.expense_belanja
+                        "liburan"       -> R.color.expense_liburan
+                        "transportasi"  -> R.color.expense_transportasi
+                        "tagihan"       -> R.color.expense_tagihan
+                        "pendidikan"    -> R.color.expense_pendidikan
+                        "kesehatan"     -> R.color.expense_kesehatan
+                        "lainnya"       -> R.color.expense_lainnya
+                        else            -> R.color.black
                     }
-                    val bgDrawable = ContextCompat.getDrawable(this@IncomeActivity, R.drawable.bg_item_transaction)
-                            as? android.graphics.drawable.GradientDrawable
-                    val bgColorInt = ContextCompat.getColor(this@IncomeActivity, colorResId)
+
+                    val bgDrawable = ContextCompat.getDrawable(
+                        this@ExpenseActivity,
+                        R.drawable.bg_item_transaction
+                    ) as? android.graphics.drawable.GradientDrawable
+
+                    val bgColorInt = ContextCompat.getColor(this@ExpenseActivity, colorResId)
                     bgDrawable?.setColor(bgColorInt)
                     itemView.background = bgDrawable
 
-                    llCategoryContainer.addView(itemView)
+                    binding.llCategoryContainer.addView(itemView)
 
                     valuesList.add(totalPerCategory.toFloat())
-
                     val composeColor = when (categoryName.lowercase().replace(" ", "_")) {
-                        "uang_kaget"           -> ComposeColor(0xFFFFD54F)
-                        "gaji"                 -> ComposeColor(0xFF4CAF50)
-                        "hadiah"               -> ComposeColor(0xFFBA68C8)
-                        "uang_saku"            -> ComposeColor(0xFF7986CB)
-                        "pendapatan_lainnya"   -> ComposeColor(0xFFB85486)
-                        else                   -> ComposeColor.LightGray
+                        "makanan"       -> ComposeColor(0xFFFF8A65)
+                        "belanja"       -> ComposeColor(0xFFC2185B)
+                        "liburan"       -> ComposeColor(0xFF0288D1)
+                        "transportasi"  -> ComposeColor(0xFF7B1FA2)
+                        "tagihan"       -> ComposeColor(0xFFFFA726)
+                        "pendidikan"    -> ComposeColor(0xFF1976D2)
+                        "kesehatan"     -> ComposeColor(0xFF8BC34A)
+                        "lainnya"       -> ComposeColor(0xFF607D8B)
+                        else            -> ComposeColor.LightGray
                     }
                     colorsList.add(composeColor)
                 }
 
-                setupPieChart(valuesList, colorsList)
+                setupPieChartExpense(valuesList, colorsList)
 
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(
-                    this@IncomeActivity,
+                    this@ExpenseActivity,
                     "Terjadi kesalahan: ${e.localizedMessage}",
                     Toast.LENGTH_LONG
                 ).show()
@@ -377,8 +384,8 @@ class IncomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupPieChart(values: List<Float>, colors: List<ComposeColor>) {
-        findViewById<ComposeView>(R.id.composePieChart).setContent {
+    private fun setupPieChartExpense(values: List<Float>, colors: List<ComposeColor>) {
+        findViewById<ComposeView>(R.id.composePieChartExpense).setContent {
             PieChart(
                 values = values,
                 colors = colors,
@@ -426,29 +433,5 @@ class IncomeActivity : AppCompatActivity() {
             setText(fillString, TextView.BufferType.SPANNABLE)
         }
     }
-
-    @Composable
-    fun PieChart(
-        values: List<Float>,
-        colors: List<ComposeColor>,
-        modifier: Modifier = Modifier,
-        labelTextSize: TextUnit = 14.sp
-    ) {
-        val total = values.sum().coerceAtLeast(1f)
-        val sweepAngles = values.map { it / total * 360f }
-
-        Canvas(modifier = modifier) {
-            var startAngle = -90f
-            sweepAngles.forEachIndexed { index, sweep ->
-                drawArc(
-                    color = colors[index],
-                    startAngle = startAngle,
-                    sweepAngle = sweep,
-                    useCenter = true,
-                    size = Size(size.width, size.height)
-                )
-                startAngle += sweep
-            }
-        }
-    }
 }
+

@@ -16,6 +16,6 @@ object CategorySeed {
         Category(name = "Tagihan", type = "expense"),
         Category(name = "Pendidikan", type = "expense"),
         Category(name = "Kesehatan", type = "expense"),
-        Category(name = "Lainnya", type = "expense")
+        Category(name = "Pengeluaran Lainnya", type = "expense")
     )
 }

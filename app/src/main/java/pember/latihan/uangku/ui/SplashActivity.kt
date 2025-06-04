@@ -13,6 +13,7 @@ import pember.latihan.uangku.R
 import pember.latihan.uangku.ui.LoginActivity
 import pember.latihan.uangku.MainActivity
 import pember.latihan.uangku.utils.CategorySyncHelper
+import pember.latihan.uangku.utils.FirebaseSyncHelper
 import pember.latihan.uangku.utils.SessionManager
 
 @SuppressLint("CustomSplashScreen")
@@ -28,6 +29,8 @@ class SplashActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             CategorySyncHelper.syncCategories(this@SplashActivity)
+
+            FirebaseSyncHelper.syncEmailIfChanged(this@SplashActivity)
 
             Handler(Looper.getMainLooper()).postDelayed({
                 val sessionManager = SessionManager.getInstance(this@SplashActivity)

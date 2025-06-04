@@ -2,7 +2,6 @@ package pember.latihan.uangku.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import pember.latihan.uangku.R
@@ -71,8 +70,8 @@ class RegisterActivity : AppCompatActivity() {
     private fun registerUser(email: String, password: String, username: String, saldo: Double) {
         RegisterService.register(email, password, username, saldo, this,
             onSuccess = {
-                Toast.makeText(this, "Registrasi berhasil!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java))
+                Toast.makeText(this, "Registrasi berhasil!\nSilahkan Login", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this, LoginActivity::class.java))
                 finish()
             },
             onError = {

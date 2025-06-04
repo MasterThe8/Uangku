@@ -33,7 +33,6 @@ object LoginService {
                 Log.i("LoginService", "Searching user with email: $email")
                 val dao = userDao(context)
 
-                // Cari user berdasarkan UID dulu jika ada
                 val firebaseUid = FirebaseAuth.getInstance().currentUser?.uid
                 val user = if (firebaseUid != null) {
                     dao.getByFirebaseUid(firebaseUid)
