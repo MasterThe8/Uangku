@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "544143518244",
+    "project_id": "uangku-451f1",
+    "storage_bucket": "uangku-451f1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:544143518244:android:7dbd1d14611220fb0e46b1",
+        "android_client_info": {
+          "package_name": "pember.latihan.uangku"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2be6TgBYsB4ULclXsw9Pu-ESvEiwU5dg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
