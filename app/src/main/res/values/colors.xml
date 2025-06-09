@@ -25,5 +25,5 @@
     <color name="expense_tagihan">#FFA726</color>
     <color name="expense_pendidikan">#1976D2</color>
     <color name="expense_kesehatan">#8BC34A</color>
-    <color name="expense_lainnya">#607D8B</color>
+    <color name="expense_pengeluaran_lainnya">#607D8B</color>
 </resources>
