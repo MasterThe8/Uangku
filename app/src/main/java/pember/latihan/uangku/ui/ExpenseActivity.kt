@@ -341,7 +341,7 @@ class ExpenseActivity : AppCompatActivity() {
                         "tagihan"       -> R.color.expense_tagihan
                         "pendidikan"    -> R.color.expense_pendidikan
                         "kesehatan"     -> R.color.expense_kesehatan
-                        "lainnya"       -> R.color.expense_lainnya
+                        "pengeluaran_lainnya"       -> R.color.expense_pengeluaran_lainnya
                         else            -> R.color.black
                     }
 
@@ -365,7 +365,7 @@ class ExpenseActivity : AppCompatActivity() {
                         "tagihan"       -> ComposeColor(0xFFFFA726)
                         "pendidikan"    -> ComposeColor(0xFF1976D2)
                         "kesehatan"     -> ComposeColor(0xFF8BC34A)
-                        "lainnya"       -> ComposeColor(0xFF607D8B)
+                        "pengeluaran_lainnya"       -> ComposeColor(0xFF607D8B)
                         else            -> ComposeColor.LightGray
                     }
                     colorsList.add(composeColor)
