@@ -21,14 +21,24 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("../keystore/uangku-release.jks")
+            storePassword = "masterthe8"
+            keyAlias = "uangku-key"
+            keyPassword = "masterthe8"
+        }
+    }
+	
     buildTypes {
-        release {
+        getByName("release") {
             isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 

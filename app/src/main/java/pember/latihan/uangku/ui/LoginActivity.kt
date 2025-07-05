@@ -32,22 +32,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        FirebaseDynamicLinks.getInstance()
-            .getDynamicLink(intent)
-            .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                val deepLink: Uri? = pendingDynamicLinkData?.link
-                if (deepLink != null && deepLink.toString().contains("emailChanged")) {
-                    Toast.makeText(this, "Email berhasil diverifikasi. Silakan login ulang.", Toast.LENGTH_LONG).show()
-
-                    val intent = Intent(this, LoginActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                }
-            }
-            .addOnFailureListener(this) { e ->
-                Log.w("MainActivity", "Gagal membaca dynamic link", e)
-        }
-
         etEmail = findViewById(R.id.etEmail)
         etPassword = findViewById(R.id.etPassword)
         btnLogin = findViewById(R.id.btnLogin)
