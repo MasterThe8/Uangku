@@ -44,7 +44,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class IncomeActivity : AppCompatActivity() {
-    private lateinit var btnAddIncome: Button
+    private lateinit var btnAddIncome   : Button
     private lateinit var llCategoryContainer: LinearLayout
     private lateinit var incomeService: IncomeService
     private lateinit var tvTotalIncome: TextView

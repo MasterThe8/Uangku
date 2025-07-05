@@ -35,12 +35,10 @@ class CompleteAdapter(
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(saving: Saving) {
-            // Hanya perlu menampilkan title + targetAmount
             val formattedTarget = numberFormat.format(saving.targetAmount)
             binding.tvTitleComplete.text = saving.title
             binding.tvTargetAmountComplete.text = "Rp$formattedTarget"
 
-            // Klik baris complete juga bisa dibuka dialog edit jika diinginkan
             binding.root.setOnClickListener { onItemClick(saving) }
         }
     }
